@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090b14">
+<title>Dhanush AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090b14;color:#eef1ff;font-family:system-ui,-apple-system,Arial,sans-serif}
+header{padding:20px 18px 12px;display:flex;align-items:center;gap:12px}
+.orb{width:43px;height:43px;border-radius:50%;background:linear-gradient(135deg,#7c5cff,#00d9ff);box-shadow:0 0 25px #745bff66}
+h1{font-size:22px;margin:0}
+small{color:#9ba6c5}
+main{max-width:700px;margin:auto;padding:10px 16px 130px}
+.welcome{text-align:center;padding:24px 8px}
+.welcome h2{font-size:27px;margin:8px}
+.welcome p{color:#a6b0cc}
+.card{background:#131829;border:1px solid #252e46;border-radius:18px;padding:15px;margin:12px 0}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{background:#1a2135;border:1px solid #303c5a;color:#edf2ff;padding:12px;border-radius:13px;font-size:14px}
+button:active{opacity:.7}
+.tools button{width:100%;text-align:left;margin:5px 0}
+#chat{display:flex;flex-direction:column;gap:10px}
+.msg{padding:12px 14px;border-radius:16px;max-width:90%;white-space:pre-wrap;line-height:1.45}
+.user{align-self:flex-end;background:#5340a8}
+.bot{align-self:flex-start;background:#1b2438}
+#inputbar{position:fixed;bottom:0;left:0;right:0;background:#090b14;padding:12px max(12px,env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom));border-top:1px solid #252e46;display:flex;gap:8px}
+#prompt{flex:1;min-width:0;background:#151c2c;color:white;border:1px solid #303c5a;border-radius:25px;padding:13px}
+#send{background:linear-gradient(135deg,#745bff,#00bfe9);border:0;font-weight:bold}
+input{outline:none}
+#memory{width:100%;min-height:80px;background:#0d1220;color:white;border:1px solid #303c5a;border-radius:12px;padding:12px}
+#ip{width:100%;background:#0d1220;color:white;border:1px solid #303c5a;border-radius:10px;padding:12px;margin:5px 0}
+.result{color:#62e6bd;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header><div class="orb"></div><div><h1>Dhanush AI</h1><small>Your personal assistant · Mobile edition</small></div></header>
+<main>
+<div class="welcome">
+<h2>Hello, Dhanush 👋</h2>
+<p>What can I help you with today?</p>
+</div>
+
+<div class="quick">
+<button onclick="quick('Help me troubleshoot a CCTV problem')">📹 CCTV Support</button>
+<button onclick="quick('Help me troubleshoot a network issue')">🌐 Network Support</button>
+<button onclick="quick('Help me plan my daily tasks')">📝 Daily Tasks</button>
+<button onclick="quick('Teach me something about aviation')">✈️ Aviation Learning</button>
+</div>
+
+<div class="card">
+<h3>💬 Assistant Chat</h3>
+<div id="chat"><div class="msg bot">Hi! I'm Dhanush AI. I'm your personal assistant prototype. Ask me something or try a tool below!</div></div>
+</div>
+
+<div class="card tools">
+<h3>🧰 Toolbox</h3>
+<button onclick="showIP()">🌐 IP / Subnet Calculator</button>
+<button onclick="quick('Give me a CCTV installation checklist')">📹 CCTV Installation Checklist</button>
+<button onclick="quick('Help me diagnose a camera offline issue step by step')">🔧 Camera Offline Troubleshooting</button>
+<button onclick="quick('Help me prepare a CCTV service report')">📄 Service Report Helper</button>
+<button onclick="showMemory()">🧠 Personal Memory</button>
+<button onclick="speakLast()">🔊 Speak Last Reply</button>
+<div id="extra"></div>
+</div>
+</main>
+
+<div id="inputbar">
+<button onclick="voiceInput()" title="Voice">🎙️</button>
+<input id="prompt" placeholder="Message your assistant..." autocomplete="off">
+<button id="send" onclick="send()">➤</button>
+</div>
+
+<script>
+const chat=document.getElementById('chat');
+let lastReply='';
+function addMsg(t,cls){let d=document.createElement('div');d.className='msg '+cls;d.textContent=t;chat.appendChild(d);chat.scrollIntoView({behavior:'smooth',block:'end')}
+}
+function send(){let i=document.getElementById('prompt'),t=i.value.trim();if(!t)return;i.value='';addMsg(t,'user');reply(t)}
+function quick(t){addMsg(t,'user');reply(t)}
+function reply(t){
+let s=t.toLowerCase(),r='';
+if(s.includes('cctv')||s.includes('camera')||s.includes('nvr')||s.includes('dvr')){
+r='CCTV Support Mode 📹\\n\\n1. Check camera power / PoE.\\n2. Check network cable and link lights.\\n3. Verify camera and recorder IP addresses are in compatible subnets.\\n4. Check credentials and protocol compatibility.\\n5. Review the recorder camera status and logs.\\n\\nTell me the camera and recorder models and the exact error for more specific help.';
+}else if(s.includes('network')||s.includes('ip')||s.includes('router')||s.includes('ping')){
+r='Network Support Mode 🌐\\n\\nCheck these basics:\\n• IP address\\n• Subnet mask\\n• Gateway\\n• Cable / Wi-Fi connection\\n• Ping the gateway\\n\\nI can also open the IP calculator in my Toolbox.';
+}else if(s.includes('task')||s.includes('daily')){
+r='Daily Task Helper 📝\\n\\nSend me your tasks and I can organize them into a checklist. This demo does not yet sync with your calendar.';
+}else if(s.includes('aviation')){
+r='Aviation Learning ✈️\\n\\nChoose a topic to study: airport operations, aviation safety, aircraft systems, navigation, meteorology, or airline operations. Tell me which topic you want!';
+}else if(s.includes('hello')||s.includes('hi')){
+r='Hello! 😊 I am here. Try my CCTV, network, memory, and voice tools. This version is a prototype, and we will connect the real AI engine next.';
+}else{
+r='I received your message! 😊\\n\\nThis is currently the offline prototype, so my answers are limited. In our next build, we will connect a real AI model for intelligent conversations.\\n\\nYou can try the CCTV, network, memory, voice and IP calculator tools meanwhile.';
+}
+lastReply=r;addMsg(r,'bot');
+}
+function speakLast(){if(!lastReply){alert('Ask me something first!');return}
+if(!('speechSynthesis' in window)){alert('Text-to-speech is not supported in this browser.');return}
+speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(lastReply);u.lang='en-IN';speechSynthesis.speak(u)}
+function voiceInput(){
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR){alert('Voice recognition is not supported in this browser. Try Chrome.');return}
+let rec=new SR();rec.lang='en-IN';rec.onresult=e=>{document.getElementById('prompt').value=e.results[0][0].transcript;send()};rec.onerror=()=>alert('Microphone error. Check browser permissions.');rec.start()
+}
+function showMemory(){
+let ex=document.getElementById('extra');
+ex.innerHTML='<h4>🧠 Your Memory Notes</h4><textarea id="memory" placeholder="Write notes you want saved on this device..."></textarea><button onclick="saveMemory()">Save Memory</button><p class="result" id="memstatus"></p>';
+document.getElementById('memory').value=localStorage.getItem('dhanush_ai_memory')||''
+}
+function saveMemory(){localStorage.setItem('dhanush_ai_memory',document.getElementById('memory').value);document.getElementById('memstatus').textContent='Saved on this device ✓'}
+function showIP(){
+let ex=document.getElementById('extra');
+ex.innerHTML='<h4>🌐 IPv4 Subnet Calculator</h4><input id="ip" placeholder="IP/CIDR e.g. 192.168.1.10/24"><button onclick="calcIP()">Calculate</button><p class="result" id="ipout"></p>';
+}
+function calcIP(){
+let v=document.getElementById('ip').value.trim().split('/'),ip=v[0],cidr=Number(v[1]||24),p=ip.split('.').map(Number);
+if(p.length!==4||p.some(x=>x<0||x>255||!Number.isInteger(x))||cidr<0||cidr>32){document.getElementById('ipout').textContent='Invalid IP or CIDR';return}
+let n=((p[0]<<24)>>>0)+((p[1]<<16)>>>0)+((p[2]<<8)>>>0)+p[3],mask=cidr===0?0:(0xffffffff<<(32-cidr))>>>0,network=(n&mask)>>>0,broadcast=(network|(~mask>>>0))>>>0;
+const fmt=x=>[(x>>>24)&255,(x>>>16)&255,(x>>>8)&255,x&255].join('.');
+document.getElementById('ipout').textContent='Network: '+fmt(network)+'\\nBroadcast: '+fmt(broadcast)+'\\nSubnet mask: '+fmt(mask)+'\\nCIDR: /'+cidr;
+}
+document.getElementById('prompt').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+</script>
+</body>
+</html>
